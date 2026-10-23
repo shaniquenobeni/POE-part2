@@ -6,43 +6,42 @@ import static org.junit.jupiter.api.Assertions.*;
 public class Messagetest {
 
     @Test
-    public void testRecipientCellSuccess() {
-        Message msg = new Message(1, "+27718693002", "Hi Mike, can you join us for dinner tonight?");
-        assertTrue(msg.checkRecipientCell());
+    public void testCheckMessageLengthValid() {
+        Message msg = new Message();
+        assertTrue(msg.checkMessageLength("Hello, this is a valid test message under 250 characters."));
     }
 
     @Test
-    public void testRecipientCellFailure() {
-        Message msg = new Message(2, "08575975889", "Hi Mike, can you join us for dinner tonight?");
-        assertFalse(msg.checkRecipientCell());
-    }
-
-    @Test
-    public void testMessageLengthSuccess() {
-        Message msg = new Message(1, "+27718693002", "Hi Mike, can you join us for dinner tonight?");
-        assertTrue(msg.checkMessageLength());
-    }
-
-    @Test
-    public void testMessageLengthFailure() {
+    public void testCheckMessageLengthInvalid() {
+        Message msg = new Message();
         String longText = "A".repeat(251);
-        Message msg = new Message(1, "+27718693002", longText);
-        assertFalse(msg.checkMessageLength());
+        assertFalse(msg.checkMessageLength(longText));
     }
 
     @Test
-    public void testMessageHashCreation() {
-        Message msg = new Message(1, "+27718693002", "Hi Mike, can you join us for dinner tonight?");
-        msg.setMessageID("0012345678");
-        String expectedHash = "00:1:HITONIGHT";
-        assertEquals(expectedHash, msg.createMessageHash());
+    public void testGenerateMessageID() {
+        Message msg = new Message();
+        String id = msg.generateMessageID();
+        assertNotNull(id);
+        assertEquals(10, id.length());
     }
 
     @Test
-    public void testSentMessageOptions() {
-        Message msg = new Message(1, "+27718693002", "Hello World");
-        assertEquals("Message successfully sent.", msg.SentMessage(1));
-        assertEquals("Press 0 to delete the message.", msg.SentMessage(2));
-        assertEquals("Message successfully stored.", msg.SentMessage(3));
+    public void testCheckRecipientCellValid() {
+        Message msg = new Message();
+        assertTrue(msg.checkRecipientCell("0821234567") || msg.checkRecipientCell("+27821234567"));
+    }
+
+    @Test
+    public void testCheckRecipientCellInvalid() {
+        Message msg = new Message();
+        assertFalse(msg.checkRecipientCell("12345"));
+    }
+
+    @Test
+    public void testCreateMessageHash() {
+        Message msg = new Message();
+        String hash = msg.createMessageHash(1, "AB1234CD56", "Catch you later");
+        assertEquals("1:AB:CATCH-LATER", hash);
     }
 }
